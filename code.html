@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Petshop Melhor Amigo</title>
+<style>
+  /* Reset & basic styles */
+  * {
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fff;
+    color: #2a4d1a; /* Dark green */
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  a {
+    color: #2a4d1a;
+    text-decoration: none;
+  }
+  a:hover,
+  button:hover {
+    color: #3bbb4f;
+  }
+  img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  h1, h2, h3 {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  /* Container */
+  .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 1rem 3rem;
+    width: 100%;
+  }
+  /* Header */
+  header {
+    background-color: #3bbb4f;
+    color: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  nav a {
+    font-weight: 600;
+    margin-left: 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  nav a.active {
+    color: #1e3812;
+    border-bottom: 2px solid #1e3812;
+  }
+  /* Buttons */
+  .btn {
+    background-color: #1e3812;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.4rem;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .btn:hover {
+    background-color: #3bbb4f;
+  }
+  /* Sections */
+  section {
+    display: none;
+    padding-top: 2rem;
+  }
+  section.active {
+    display: block;
+  }
+  /* Homepage styles */
+  #home header-slogan {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+    color: #4a7a32;
+  }
+  #home .intro-text {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  #home .promo {
+    background-color: #e6f4e8;
+    border-left: 5px solid #3bbb4f;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    border-radius: 6px;
+  }
+  /* Products page */
+  .products-section {
+    margin-bottom: 3rem;
+  }
+  .products-section h2 {
+    border-bottom: 3px solid #3bbb4f;
+    padding-bottom: 0.2rem;
+    margin-bottom: 1rem;
+  }
+  .product-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .product-item {
+    flex: 1 1 300px;
+    background-color: #f8f9f8;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgb(46 125 50 / 0.15);
+    padding: 1rem;
+    transition: box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+  }
+  .product-item:hover {
+    box-shadow: 0 6px 14px rgb(46 125 50 / 0.25);
+  }
+  .product-item img {
+    border-radius: 8px;
+    margin-bottom: 0.8rem;
+  }
+  .product-item h3 {
+    margin: 0.5rem 0;
+    color: #2a4d1a;
+  }
+  .product-item p {
+    flex-grow:1;
+    font-size: 0.95rem;
+    color: #385f22;
+  }
+  .product-item button {
+    align-self: start;
+    margin-top: 1rem;
+  }
+  /* Gallery page */
+  #gallery .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px, 1fr));
+    gap: 15px;
+  }
+  #gallery .gallery-item {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+  }
+  #gallery .gallery-item img {
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+  #gallery .gallery-item:hover img {
+    transform: scale(1.05);
+  }
+  /* Modal for gallery */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 80px;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(25, 50, 10, 0.9);
+  }
+  .modal-content {
+    position: relative;
+    margin: auto;
+    max-width: 90vw;
+    max-height: 80vh;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    padding: 0;
+  }
+  .modal-content img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .modal-caption {
+    padding: 1rem 1.4rem;
+    color: #2a4d1a;
+    background: #e6f4e8;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #3bbb4f;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    text-shadow: 0 0 4px #0a2800;
+  }
+  /* Contact page */
+  #contact form {
+    max-width: 600px;
+    margin: auto;
+  }
+  #contact label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-weight: 600;
+  }
+  #contact input, #contact textarea {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 6px;
+    border: 1.8px solid #3bbb4f;
+    margin-bottom: 1.2rem;
+    font-size: 1rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+  }
+  #contact input:focus, #contact textarea:focus {
+    outline: none;
+    border-color: #1e3812;
+  }
+  #contact button {
+    display: block;
+    background-color: #3bbb4f;
+    color: white;
+    font-weight: 700;
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: auto;
+    transition: background-color 0.3s ease;
+  }
+  #contact button:hover {
+    background-color: #2a7013;
+  }
+  #contact .contact-info {
+    max-width: 600px;
+    margin: 2rem auto 0;
+    font-size: 1rem;
+    color: #385f22;
+  }
+  #contact .newsletter {
+    font-size: 0.95rem;
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  /* Footer */
+  footer {
+    background-color: #1e3812;
+    color: white;
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.9rem;
+    margin-top: auto;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    header .container {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    nav {
+      margin-top: 0.5rem;
+    }
+    nav a {
+      margin-left: 0;
+      margin-right: 1rem;
+    }
+    .product-item {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>Petshop Melhor Amigo</h1>
+    <nav>
+      <a href="#" class="nav-link active" data-target="home">Início</a>
+      <a href="#" class="nav-link" data-target="products">Produtos</a>
+      <a href="#" class="nav-link" data-target="gallery">Galeria</a>
+      <a href="#" class="nav-link" data-target="contact">Contato</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Home Section -->
+  <section id="home" class="active" aria-label="Página Inicial">
+    <h2>Bem-vindo ao Petshop "Melhor Amigo"!</h2>
+    <p class="intro-text">
+      No Petshop "Melhor Amigo", nós entendemos que seu animal de estimação é mais do que apenas um bichinho, é um membro especial da sua família. Com isso em mente, estamos comprometidos em fornecer cuidados excepcionais e serviços de alta qualidade para garantir que seu melhor amigo tenha uma vida feliz e saudável.
+    </p>
+    <p class="intro-text">
+      Com uma equipe dedicada e apaixonada por animais, nossos profissionais treinados estão prontos para oferecer os melhores cuidados para o seu pet. Desde serviços de tosa profissional, onde deixaremos seu animalzinho com um visual impecável, até a limpeza e higienização completa, proporcionamos um ambiente seguro e tranquilo para que seu amigo se sinta confortável durante todo o processo.
+    </p>
+    <p class="intro-text">
+      Sabemos que a alimentação é fundamental para a saúde do seu pet, por isso oferecemos uma ampla variedade de rações de alta qualidade e alimentos balanceados, adaptados às necessidades individuais de cada animal. Nossos especialistas estão disponíveis para fornecer orientação personalizada e ajudá-lo a escolher a melhor opção para o seu amiguinho.
+    </p>
+    <p class="intro-text">
+      No Petshop "Melhor Amigo", também acreditamos na importância da socialização e diversão para o bem-estar dos animais. Por isso, oferecemos momentos especiais de brincadeiras e interação em nosso espaço dedicado, garantindo que seu pet se divirta e faça novos amigos. Além disso, temos uma ampla variedade de brinquedos e acessórios para enriquecer a vida do seu animalzinho.
+    </p>
+    <div class="promo" aria-live="polite">
+      Promoção Especial! Confira nossos descontos na tosa e banhos relaxantes este mês!
+    </div>
+    <button class="btn" id="to-products-btn">Veja nossos produtos</button>
+  </section>
+
+  <!-- Products Section -->
+  <section id="products" aria-label="Página de Produtos">
+    <h2>Produtos e Serviços</h2>
+    <section class="products-section" aria-label="Serviços de Limpeza">
+      <h3>Limpeza</h3>
+      <div class="product-card">
+        <article class="product-item">
+          <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=400&q=80" alt="Cão feliz tomando banho" />
+          <h3>Banho Relaxante</h3>
+          <p>Banhos com produtos de qualidade para cães e gatos, garantindo limpeza profunda e refrescante para seu pet.</p>
+          <button class="btn product-info-btn" data-product="Banho Relaxante">Solicitar Informação</button>
+        </article>
+        <article class="product-item">
+          <img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=400&q=80" alt="Cuidados com orelhas e unhas de cachorro" />
+          <h3>Cuidados Especiais</h3>
+          <p>Limpeza de ouvidos e corte de unhas feitas com cuidado, deixando seu cãozinho limpo e confortável.</p>
+          <button class="btn product-info-btn" data-product="Cuidados Especiais">Solicitar Informação</button>
+        </article>
+      </div>
+    </section>
+    <section class="products-section" aria-label="Serviço de Tosa">
+      <h3>Tosa</h3>
+      <div class="product-card">
+        <article class="product-item">
+          <img src="https://images.unsplash.com/photo-1590080877777-0a97c8c456d2?auto=format&fit=crop&w=400&q=80" alt="Cachorro com tosa profissional" />
+          <h3>Serviço de Tosa Especializada</h3>
+          <p>Tosa profissional personalizada para todas as raças com técnicas avançadas e cuidados especiais.</p>
+          <button class="btn product-info-btn" data-product="Tosa Especializada">Solicitar Informação</button>
+        </article>
+        <article class="product-item">
+          <img src="https://images.unsplash.com/photo-1576765607929-5eda1753712d?auto=format&fit=crop&w=400&q=80" alt="Tosador profissional cuidando do pet" />
+          <h3>Equipe Qualificada</h3>
+          <p>Tosadores experientes garantem um ambiente seguro e tranquilo para seu pet durante o processo.</p>
+          <button class="btn product-info-btn" data-product="Equipe de Tosadores">Solicitar Informação</button>
+        </article>
+      </div>
+    </section>
+    <section class="products-section" aria-label="Venda de Ração">
+      <h3>Venda de Ração</h3>
+      <div class="product-card">
+        <article class="product-item">
+          <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=400&q=80" alt="Rações premium para cães e gatos" />
+          <h3>Ração Premium</h3>
+          <p>Seleção de rações de alta qualidade para cães e gatos, formuladas para diferentes idades e necessidades.</p>
+          <button class="btn product-info-btn" data-product="Ração Premium">Solicitar Informação</button>
+        </article>
+        <article class="product-item">
+          <img src="https://images.unsplash.com/photo-1606556181682-64298a742e83?auto=format&fit=crop&w=400&q=80" alt="Animais comendo ração balanceada" />
+          <h3>Alimentação Balanceada</h3>
+          <p>Alimentos balanceados e orientação especializada para o bem-estar e saúde do seu pet.</p>
+          <button class="btn product-info-btn" data-product="Alimentação Balanceada">Solicitar Informação</button>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery" aria-label="Galeria de Fotos">
+    <h2>Galeria de Fotos</h2>
+    <p>Veja alguns dos adoráveis clientes que já passaram pelo nosso Petshop.</p>
+    <div class="gallery-grid" role="list">
+      <div class="gallery-item" tabindex="0" data-caption="Rex, um cão feliz após banho relaxante">
+        <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=500&q=80" alt="Cachorro Rex após banho" />
+      </div>
+      <div class="gallery-item" tabindex="0" data-caption="Luna, gata confortável após tosa">
+        <img src="https://images.unsplash.com/photo-1590080877777-0a97c8c456d2?auto=format&fit=crop&w=500&q=80" alt="Gata Luna após tosa" />
+      </div>
+      <div class="gallery-item" tabindex="0" data-caption="Tobby, cachorro brincando com brinquedo interativo">
+        <img src="https://images.unsplash.com/photo-1576765607929-5eda1753712d?auto=format&fit=crop&w=500&q=80" alt="Cachorro Tobby com brinquedo" />
+      </div>
+      <div class="gallery-item" tabindex="0" data-caption="Mimi, gata carinhosa e saudável">
+        <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=500&q=80" alt="Gata Mimi carinhosa" />
+      </div>
+      <div class="gallery-item" tabindex="0" data-caption="Teddy, cãozinho feliz após banho">
+        <img src="https://images.unsplash.com/photo-1606556181682-64298a742e83?auto=format&fit=crop&w=500&q=80" alt="Cão Teddy após banho" />
+      </div>
+      <div class="gallery-item" tabindex="0" data-caption="Bella, gata após tosa e cuidados">
+        <img src="https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=500&q=80" alt="Gata Bella após tosa" />
+      </div>
+    </div>
+    <!-- Modal -->
+    <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-caption" aria-hidden="true">
+      <div class="modal-content">
+        <span class="modal-close" aria-label="Fechar galeria" tabindex="0">&times;</span>
+        <img src="" alt="" id="modal-img" />
+        <div class="modal-caption" id="modal-caption"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section id="contact" aria-label="Página de Contato">
+    <h2>Contato</h2>
+    <form id="contact-form" novalidate>
+      <label for="name">Nome:</label>
+      <input type="text" id="name" name="name" required placeholder="Seu nome" aria-required="true" />
+      <label for="email">E-mail:</label>
+      <input type="email" id="email" name="email" required placeholder="seu@email.com" aria-required="true" />
+      <label for="phone">Telefone:</label>
+      <input type="tel" id="phone" name="phone" placeholder="(00) 00000-0000" pattern="[\d\s()+-]{8,}" />
+      <label for="message">Mensagem:</label>
+      <textarea id="message" name="message" rows="4" required placeholder="Escreva sua mensagem" aria-required="true"></textarea>
+      <div class="newsletter">
+        <input type="checkbox" id="newsletter" name="newsletter" />
+        <label for="newsletter">Quero receber novidades e promoções por e-mail</label>
+      </div>
+      <button type="submit" class="btn">Enviar Mensagem</button>
+    </form>
+    <div class="contact-info" aria-live="polite" id="form-response" role="alert"></div>
+    <div class="contact-info" style="margin-top:2rem;">
+      <p><strong>Endereço:</strong> Rua das Flores, 123 - Centro, Sua Cidade</p>
+      <p><strong>Telefone:</strong> (11) 99999-9999</p>
+      <p><strong>E-mail:</strong> contato@melhoramigo.com.br</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>© 2024 Petshop Melhor Amigo - Cuidado e amor pelo seu melhor amigo</p>
+</footer>
+
+<script>
+  // Navigation
+  const navLinks = document.querySelectorAll('nav .nav-link');
+  const sections = document.querySelectorAll('main section');
+
+  function setActiveSection(targetId) {
+    sections.forEach(sec => {
+      if (sec.id === targetId) {
+        sec.classList.add('active');
+      } else {
+        sec.classList.remove('active');
+      }
+    });
+    navLinks.forEach(link => {
+      if (link.dataset.target === targetId) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = link.dataset.target;
+      setActiveSection(target);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Call to action button at homepage
+  document.getElementById('to-products-btn').addEventListener('click', () => {
+    setActiveSection('products');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // Gallery modal
+  const galleryItems = document.querySelectorAll('.gallery-item');
+  const modal = document.getElementById('modal');
+  const modalImg = document.getElementById('modal-img');
+  const modalCaption = document.getElementById('modal-caption');
+  const modalClose = document.querySelector('.modal-close');
+
+  galleryItems.forEach(item => {
+    item.addEventListener('click', () => {
+      openModal(item);
+    });
+    // keyboard accessibility
+    item.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(item);
+      }
+    });
+  });
+
+  function openModal(item) {
+    modalImg.src = item.querySelector('img').src;
+    modalImg.alt = item.querySelector('img').alt;
+    modalCaption.textContent = item.dataset.caption;
+    modal.style.display = 'block';
+    modal.setAttribute('aria-hidden', 'false');
+    modalClose.focus();
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalClose.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      closeModal();
+    }
+  });
+  modal.addEventListener('click', (e) => {
+    if(e.target === modal) {
+      closeModal();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && modal.style.display === 'block') {
+      closeModal();
+    }
+  });
+
+  // Contact form submission
+  const form = document.getElementById('contact-form');
+  const formResponse = document.getElementById('form-response');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    formResponse.textContent = '';
+    if(!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    // Simulate form sending
+    formResponse.style.color = '#3bbb4f';
+    formResponse.textContent = 'Enviando mensagem...';
+
+    setTimeout(() => {
+      form.reset();
+      formResponse.textContent = 'Mensagem enviada com sucesso! Obrigado por entrar em contato.';
+    }, 1200);
+  });
+
+  // Product info buttons
+  const productInfoButtons = document.querySelectorAll('.product-info-btn');
+  productInfoButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const productName = button.dataset.product;
+      alert(`Obrigado pelo seu interesse no produto/serviço: "${productName}".\n\nPor favor, entre em contato conosco na página de contato para mais informações ou para realizar uma compra.`);
+      setActiveSection('contact');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>
+
